@@ -1,7 +1,7 @@
 name: Build and Push Spring Boot to Docker Hub
 
 # Kích hoạt workflow khi có thao tác Push lên nhánh main
-on:
+on: 
   push:
     branches: [ "main" ]
 
@@ -27,5 +27,7 @@ jobs:
         with:
           context: .
           push: true
-          # Tự động lấy username từ secret, bạn chỉ cần thay "my-spring-boot-app" thành tên app của bạn
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:latest
+          # SỬ DỤNG DẤU "|" ĐỂ KHAI BÁO NHIỀU TAG CÙNG LÚC
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/my-portfolio:v${{ github.run_number }}.0
+            ${{ secrets.DOCKERHUB_USERNAME }}/my-portfolio:latest
