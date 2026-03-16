@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phạm Huỳnh Tài – Front-End Developer</title>
+  <meta name="description" content="Trang giới thiệu bản thân của Phạm Huỳnh Tài – Front-End Developer về JavaScript, ReactJS, Next.js và Flutter." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ===================== RESET & ROOT ===================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080b14; --bg2: #0d1120;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --primary: #6366f1; --primary2: #a855f7; --accent: #06b6d4;
+      --text: #e2e8f0; --muted: #94a3b8; --white: #ffffff;
+      --radius: 16px; --radius-sm: 8px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.7; }
+    canvas#bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.6; }
+    section, nav, footer { position: relative; z-index: 1; }
+    a { text-decoration: none; color: inherit; }
+    h1,h2,h3 { font-family: 'Space Grotesk', sans-serif; line-height: 1.2; }
+
+    /* ===================== GLASS CARD ===================== */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem;
+      backdrop-filter: blur(20px); box-shadow: var(--shadow);
+      transition: transform .3s, box-shadow .3s, border-color .3s;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(99,102,241,.15); border-color: rgba(99,102,241,.3); }
+
+    /* ===================== BUTTONS ===================== */
+    .btn { display: inline-flex; align-items: center; gap: .5rem; padding: .75rem 1.75rem; border-radius: 50px; font-weight: 600; font-size: .95rem; cursor: pointer; border: none; transition: opacity .2s, transform .2s, box-shadow .2s; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary2)); color: var(--white); box-shadow: 0 4px 20px rgba(99,102,241,.35); }
+    .btn-primary:hover { opacity: .9; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(99,102,241,.5); }
+    .btn-outline { border: 1.5px solid var(--border); color: var(--text); background: none; }
+    .btn-outline:hover { border-color: var(--primary); background: rgba(99,102,241,.1); transform: translateY(-2px); }
+    .btn-full { width: 100%; justify-content: center; }
+
+    /* ===================== NAV ===================== */
+    nav#nav { position: fixed; top:0; left:0; right:0; z-index:100; padding:1rem 2rem; transition: background .3s; }
+    nav#nav.scrolled { background: rgba(8,11,20,.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; gap:2rem; }
+    .nav-logo { font-family:'Space Grotesk',sans-serif; font-size:1.4rem; font-weight:700; color:var(--white); }
+    .nav-logo span { color: var(--primary); }
+    .nav-links { list-style:none; display:flex; gap:1.75rem; margin-left:auto; }
+    .nav-links a { font-size:.9rem; color:var(--muted); font-weight:500; transition:color .2s; }
+    .nav-links a:hover,.nav-links a.active { color:var(--white); }
+    .nav-cta { padding:.5rem 1.25rem; border-radius:50px; background:linear-gradient(135deg,var(--primary),var(--primary2)); color:var(--white); font-weight:600; font-size:.85rem; transition:opacity .2s,transform .2s; }
+    .nav-cta:hover { opacity:.85; transform:scale(1.04); }
+
+    /* ===================== SECTION HEADER ===================== */
+    .sec-wrap { max-width:1200px; margin:0 auto; padding:6rem 2rem; }
+    .sec-header { text-align:center; margin-bottom:3.5rem; }
+    .sec-tag { font-size:.8rem; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--primary); display:block; margin-bottom:.75rem; }
+    .sec-header h2 { font-size:clamp(2rem,4vw,3rem); background:linear-gradient(135deg,#fff 40%,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+    /* ===================== HERO ===================== */
+    #hero { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:4rem; max-width:1200px; margin:0 auto; padding:7rem 2rem 4rem; }
+    .hero-badge { display:inline-flex; align-items:center; gap:.5rem; padding:.4rem 1rem; background:rgba(6,182,212,.12); border:1px solid rgba(6,182,212,.3); border-radius:50px; font-size:.82rem; font-weight:500; color:var(--accent); margin-bottom:1.5rem; }
+    .badge-dot { width:8px; height:8px; background:var(--accent); border-radius:50%; animation:blink 1.5s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .hero-name { font-size:clamp(2.5rem,5vw,4.5rem); color:var(--white); margin-bottom:.5rem; }
+    .grad { background:linear-gradient(135deg,var(--primary),var(--primary2),var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero-title { font-size:1.1rem; font-weight:500; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; margin-bottom:1.5rem; }
+    .hero-desc { font-size:1.02rem; color:var(--muted); max-width:520px; margin-bottom:2rem; }
+    .hero-desc strong { color:var(--white); }
+    .hero-cta { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:3rem; }
+    .hero-stats { display:flex; align-items:center; gap:1.5rem; }
+    .stat-num { display:block; font-size:2rem; font-weight:800; font-family:'Space Grotesk',sans-serif; background:linear-gradient(135deg,var(--primary),var(--primary2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .stat-label { font-size:.78rem; color:var(--muted); font-weight:500; }
+    .stat-div { width:1px; height:40px; background:var(--border); }
+    /* avatar */
+    .avatar-wrap { position:relative; display:flex; align-items:center; justify-content:center; }
+    .ring { position:absolute; border-radius:50%; border:1px solid rgba(99,102,241,.25); animation:spin 20s linear infinite; }
+    .r1 { width:340px; height:340px; }
+    .r2 { width:280px; height:280px; border-color:rgba(168,85,247,.2); animation-direction:reverse; animation-duration:15s; }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .avatar-circle { width:220px; height:220px; border-radius:50%; background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(168,85,247,.2)); border:2px solid rgba(99,102,241,.5); display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; z-index:1; gap:.25rem; }
+    .avatar-circle svg { width:80px; height:80px; color:var(--primary); }
+    .avatar-initials { font-family:'Space Grotesk',sans-serif; font-size:1.4rem; font-weight:700; color:var(--primary); }
+    .chip { position:absolute; padding:.45rem .9rem; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:50px; font-size:.8rem; font-weight:500; color:var(--white); backdrop-filter:blur(10px); display:flex; align-items:center; gap:.4rem; white-space:nowrap; animation:float 3s ease-in-out infinite; }
+    .c1 { top:30px; right:-10px; }
+    .c2 { bottom:60px; right:-20px; animation-delay:1s; }
+    .c3 { top:50%; left:-30px; transform:translateY(-50%); animation:float3 3s ease-in-out infinite 2s; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    @keyframes float3 { 0%,100%{transform:translateY(-50%)} 50%{transform:translateY(calc(-50% - 8px))} }
+
+    /* ===================== ABOUT ===================== */
+    .about-grid { display:grid; grid-template-columns:1fr .85fr; gap:2rem; }
+    .about-text p { color:var(--muted); margin-bottom:1.2rem; font-size:.97rem; }
+    .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.5rem; }
+    .info-item { display:flex; align-items:flex-start; gap:.75rem; }
+    .info-icon { font-size:1.2rem; flex-shrink:0; }
+    .info-label { display:block; font-size:.72rem; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:.05em; }
+    .info-val { font-size:.9rem; color:var(--white); font-weight:500; }
+    .info-link { font-size:.9rem; color:var(--primary); }
+    .info-link:hover { color:var(--primary2); }
+    .card-title { font-size:1rem; font-weight:700; color:var(--white); margin-bottom:1.25rem; }
+    .edu-item { display:flex; gap:1rem; }
+    .edu-dot { width:12px; height:12px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary2)); flex-shrink:0; margin-top:5px; }
+    .edu-degree { font-size:.92rem; font-weight:600; color:var(--white); display:block; }
+    .edu-school { font-size:.83rem; color:var(--muted); display:block; }
+    .edu-year { font-size:.78rem; color:var(--primary); font-weight:600; display:block; margin-top:.25rem; }
+    .lang-list { display:flex; flex-direction:column; gap:.85rem; margin-top:1.5rem; }
+    .lang-item { display:grid; grid-template-columns:110px 1fr 80px; align-items:center; gap:.75rem; font-size:.87rem; color:var(--muted); }
+    .lang-bar { height:5px; background:rgba(255,255,255,.1); border-radius:10px; overflow:hidden; }
+    .lang-fill { height:100%; background:linear-gradient(90deg,var(--primary),var(--primary2)); border-radius:10px; }
+    .lang-level { font-size:.78rem; color:var(--primary); font-weight:600; text-align:right; }
+
+    /* ===================== SKILLS ===================== */
+    .skills-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; }
+    .skill-card { text-align:center; padding:1.75rem 1.25rem; }
+    .sk-icon { width:56px; height:56px; margin:0 auto 1rem; border-radius:14px; background:linear-gradient(135deg,hsl(var(--h),70%,20%),hsl(var(--h),70%,15%)); display:flex; align-items:center; justify-content:center; color:hsl(var(--h),80%,70%); }
+    .sk-icon svg { width:28px; height:28px; }
+    .skill-card h3 { font-size:.9rem; font-weight:600; color:var(--white); margin-bottom:1rem; }
+    .sk-bar { height:5px; background:rgba(255,255,255,.08); border-radius:10px; overflow:hidden; margin-bottom:.5rem; }
+    .sk-fill { height:100%; background:linear-gradient(90deg,hsl(var(--h),70%,55%),hsl(var(--h),90%,70%)); border-radius:10px; width:0; transition:width 1.2s ease; }
+    .sk-pct { font-size:.75rem; color:var(--muted); font-weight:600; }
+
+    /* ===================== PROJECTS ===================== */
+    .proj-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+    .proj-card.featured { grid-column:1/-1; }
+    .proj-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap; gap:.5rem; }
+    .tags { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .tag { padding:.25rem .65rem; background:rgba(99,102,241,.15); border:1px solid rgba(99,102,241,.3); border-radius:50px; font-size:.72rem; font-weight:600; color:var(--primary); }
+    .proj-year { font-size:.78rem; color:var(--muted); }
+    .proj-title { font-size:1.3rem; color:var(--white); margin-bottom:.25rem; }
+    .proj-sub { font-size:.83rem; color:var(--primary); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.75rem; }
+    .proj-desc { font-size:.92rem; color:var(--muted); margin-bottom:1rem; }
+    .proj-feats { list-style:none; display:flex; flex-direction:column; gap:.4rem; }
+    .proj-feats li { font-size:.85rem; color:var(--muted); }
+    .proj-feats strong { color:var(--white); }
+    .proj-foot { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border); }
+    .proj-link { font-size:.9rem; font-weight:600; color:var(--primary); transition:color .2s; }
+    .proj-link:hover { color:var(--primary2); }
+
+    /* ===================== CONTACT ===================== */
+    .contact-wrap { display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:start; }
+    .contact-intro { color:var(--muted); margin-bottom:2rem; font-size:.97rem; }
+    .contact-items { display:flex; flex-direction:column; gap:1rem; }
+    .c-item { display:flex; align-items:center; gap:1rem; padding:1rem; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:var(--radius-sm); transition:background .2s,border-color .2s,transform .2s; }
+    a.c-item:hover { background:rgba(99,102,241,.08); border-color:rgba(99,102,241,.3); transform:translateX(4px); }
+    .c-icon { font-size:1.4rem; flex-shrink:0; }
+    .c-label { display:block; font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-weight:600; }
+    .c-val { font-size:.9rem; color:var(--white); font-weight:500; }
+    /* form */
+    .form-group { margin-bottom:1.25rem; }
+    .form-group label { display:block; font-size:.82rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-bottom:.5rem; }
+    .form-group input,.form-group textarea { width:100%; padding:.75rem 1rem; background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--white); font-family:'Inter',sans-serif; font-size:.93rem; outline:none; transition:border-color .2s,background .2s; }
+    .form-group input:focus,.form-group textarea:focus { border-color:var(--primary); background:rgba(99,102,241,.06); }
+    .form-group input::placeholder,.form-group textarea::placeholder { color:rgba(148,163,184,.5); }
+    .form-group textarea { resize:vertical; min-height:120px; }
+    .form-success { display:none; text-align:center; padding:.85rem; background:rgba(6,182,212,.1); border:1px solid rgba(6,182,212,.3); border-radius:var(--radius-sm); color:var(--accent); font-size:.9rem; margin-top:1rem; }
+
+    /* ===================== FOOTER ===================== */
+    footer { padding:3rem 2rem; text-align:center; border-top:1px solid var(--border); }
+    .foot-logo { font-family:'Space Grotesk',sans-serif; font-size:1.8rem; font-weight:800; color:var(--white); display:block; margin-bottom:.75rem; }
+    .foot-logo span { color:var(--primary); }
+    .foot-text { color:var(--muted); font-size:.9rem; }
+    .foot-sub { color:rgba(148,163,184,.5); font-size:.8rem; margin-top:.25rem; }
+
+    /* ===================== REVEAL ===================== */
+    .reveal { opacity:0; transform:translateY(40px); transition:opacity .7s ease,transform .7s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* ===================== RESPONSIVE ===================== */
+    @media(max-width:1024px) { .skills-grid { grid-template-columns:repeat(3,1fr); } }
+    @media(max-width:768px) {
+      #hero { grid-template-columns:1fr; padding:6rem 1.5rem 3rem; gap:3rem; }
+      .avatar-wrap { order:-1; }
+      .about-grid,.contact-wrap { grid-template-columns:1fr; }
+      .info-grid { grid-template-columns:1fr; }
+      .skills-grid { grid-template-columns:repeat(2,1fr); }
+      .proj-grid { grid-template-columns:1fr; }
+      .proj-card.featured { grid-column:1; }
+      .nav-links,.nav-cta { display:none; }
+    }
+    @media(max-width:480px) { .skills-grid { grid-template-columns:1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo">PHT<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">Về tôi</a></li>
+      <li><a href="#skills">Kỹ năng</a></li>
+      <li><a href="#projects">Dự án</a></li>
+      <li><a href="#contact">Liên hệ</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Liên hệ ngay</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span class="badge-dot"></span> Available for work</div>
+    <h1 class="hero-name">Phạm Huỳnh <span class="grad">Tài</span></h1>
+    <p class="hero-title">Front-End Developer</p>
+    <p class="hero-desc">
+      Lập trình viên Front-End với tư duy thẩm mỹ tốt, nền tảng vững chắc về
+      <strong>JavaScript / ReactJS / Next.js</strong>. Đam mê xây dựng giao diện đẹp,
+      hiệu suất cao và trải nghiệm người dùng xuất sắc.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">Xem dự án</a>
+      <a href="#contact" class="btn btn-outline">Liên hệ tôi</a>
+    </div>
+    <div class="hero-stats">
+      <div><span class="stat-num">2+</span><span class="stat-label">Năm kinh nghiệm</span></div>
+      <div class="stat-div"></div>
+      <div><span class="stat-num">3+</span><span class="stat-label">Dự án hoàn thành</span></div>
+      <div class="stat-div"></div>
+      <div><span class="stat-num">7+</span><span class="stat-label">Công nghệ</span></div>
+    </div>
+  </div>
+
+  <div class="avatar-wrap">
+    <div class="ring r1"></div>
+    <div class="ring r2"></div>
+    <div class="avatar-circle">
+      <svg viewBox="0 0 120 120" fill="none"><circle cx="60" cy="45" r="22" fill="url(#ag)"/><ellipse cx="60" cy="95" rx="34" ry="22" fill="url(#ag)"/><defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#a855f7"/></linearGradient></defs></svg>
+      <span class="avatar-initials">PHT</span>
+    </div>
+    <div class="chip c1"><span>⚡</span> Next.js</div>
+    <div class="chip c2"><span>📱</span> Flutter</div>
+    <div class="chip c3"><span>🎨</span> UI/UX</div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="sec-wrap">
+    <div class="sec-header">
+      <span class="sec-tag">01 — Về tôi</span>
+      <h2>Tôi là ai?</h2>
+    </div>
+    <div class="about-grid">
+      <div class="card about-text reveal">
+        <p>Xin chào! Tôi là <strong>Phạm Huỳnh Tài</strong>, sinh viên năm cuối ngành
+          <em style="color:var(--primary);font-style:normal;">Công nghệ thông tin / Kỹ thuật phần mềm</em>
+          tại <strong>Trường Đại học Công nghệ TP.HCM (HUTECH)</strong>.</p>
+        <p>Với niềm đam mê lập trình Front-End, tôi tập trung tạo ra những sản phẩm web hiện đại,
+          tối ưu hiệu suất và mang lại trải nghiệm người dùng tốt nhất. Tôi có kinh nghiệm freelance
+          phát triển Landing Page và xây dựng ứng dụng cross-platform với Flutter.</p>
+        <p>Tôi luôn chủ động học hỏi công nghệ mới, cẩn thận trong từng chi tiết thiết kế và code sạch.</p>
+        <div class="info-grid">
+          <div class="info-item"><span class="info-icon">📍</span><div><span class="info-label">Địa điểm</span><span class="info-val">Trà Vinh, Việt Nam</span></div></div>
+          <div class="info-item"><span class="info-icon">🎓</span><div><span class="info-label">Trường</span><span class="info-val">HUTECH (2022–2026)</span></div></div>
+          <div class="info-item"><span class="info-icon">🌐</span><div><span class="info-label">Website</span><a href="https://taipham-blog.vercel.app" target="_blank" class="info-link">taipham-blog.vercel.app</a></div></div>
+          <div class="info-item"><span class="info-icon">📧</span><div><span class="info-label">Email</span><span class="info-val" style="font-size:.82rem">phamhuynhtai2004@gmail.com</span></div></div>
+        </div>
+      </div>
+      <div class="card reveal" style="transition-delay:.15s">
+        <h3 class="card-title">🎓 Học vấn</h3>
+        <div class="edu-item">
+          <div class="edu-dot"></div>
+          <div><span class="edu-degree">Công nghệ thông tin / Kỹ thuật phần mềm</span><span class="edu-school">Ho Chi Minh City University of Technology (HUTECH)</span><span class="edu-year">2022 – 2026</span></div>
+        </div>
+        <h3 class="card-title" style="margin-top:2rem">🗣️ Ngôn ngữ</h3>
+        <div class="lang-list">
+          <div class="lang-item"><span>🇻🇳 Tiếng Việt</span><div class="lang-bar"><div class="lang-fill" style="width:100%"></div></div><span class="lang-level">Native</span></div>
+          <div class="lang-item"><span>🇬🇧 English</span><div class="lang-bar"><div class="lang-fill" style="width:65%"></div></div><span class="lang-level">Intermediate</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="sec-wrap">
+    <div class="sec-header">
+      <span class="sec-tag">02 — Kỹ năng</span>
+      <h2>Công nghệ tôi sử dụng</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card card reveal" style="--h:250"><div class="sk-icon" style="--h:250"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 2L2 8l14 6 14-6z"/><path d="M2 16l14 6 14-6" stroke="currentColor" stroke-width="2" fill="none"/></svg></div><h3>Next.js</h3><div class="sk-bar"><div class="sk-fill" style="--h:250" data-w="88%"></div></div><span class="sk-pct">88%</span></div>
+      <div class="skill-card card reveal" style="--h:45;transition-delay:.07s"><div class="sk-icon" style="--h:45"><svg viewBox="0 0 32 32" fill="currentColor"><circle cx="16" cy="16" r="14" opacity=".15"/><text x="16" y="21" text-anchor="middle" font-size="13" font-weight="bold" fill="currentColor">JS</text></svg></div><h3>JavaScript</h3><div class="sk-bar"><div class="sk-fill" style="--h:45" data-w="85%"></div></div><span class="sk-pct">85%</span></div>
+      <div class="skill-card card reveal" style="--h:200;transition-delay:.14s"><div class="sk-icon" style="--h:200"><svg viewBox="0 0 32 32" fill="currentColor"><circle cx="16" cy="16" r="14" opacity=".15"/><text x="16" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="currentColor">Re</text></svg></div><h3>ReactJS</h3><div class="sk-bar"><div class="sk-fill" style="--h:200" data-w="82%"></div></div><span class="sk-pct">82%</span></div>
+      <div class="skill-card card reveal" style="--h:180;transition-delay:.21s"><div class="sk-icon" style="--h:180"><svg viewBox="0 0 32 32" fill="currentColor"><circle cx="16" cy="16" r="14" opacity=".15"/><text x="16" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="currentColor">Fl</text></svg></div><h3>Flutter/Dart</h3><div class="sk-bar"><div class="sk-fill" style="--h:180" data-w="80%"></div></div><span class="sk-pct">80%</span></div>
+      <div class="skill-card card reveal" style="--h:25;transition-delay:.28s"><div class="sk-icon" style="--h:25"><svg viewBox="0 0 32 32" fill="currentColor"><rect x="4" y="4" width="24" height="24" rx="3" opacity=".15"/><text x="16" y="21" text-anchor="middle" font-size="11" font-weight="bold" fill="currentColor">H5</text></svg></div><h3>HTML5</h3><div class="sk-bar"><div class="sk-fill" style="--h:25" data-w="92%"></div></div><span class="sk-pct">92%</span></div>
+      <div class="skill-card card reveal" style="--h:210;transition-delay:.35s"><div class="sk-icon" style="--h:210"><svg viewBox="0 0 32 32" fill="currentColor"><rect x="4" y="4" width="24" height="24" rx="3" opacity=".15"/><text x="16" y="21" text-anchor="middle" font-size="9" font-weight="bold" fill="currentColor">CSS</text></svg></div><h3>CSS3</h3><div class="sk-bar"><div class="sk-fill" style="--h:210" data-w="90%"></div></div><span class="sk-pct">90%</span></div>
+      <div class="skill-card card reveal" style="--h:290;transition-delay:.42s"><div class="sk-icon" style="--h:290"><svg viewBox="0 0 32 32" fill="currentColor"><circle cx="16" cy="16" r="14" opacity=".15"/><text x="16" y="21" text-anchor="middle" font-size="10" font-weight="bold" fill="currentColor">Fig</text></svg></div><h3>Figma</h3><div class="sk-bar"><div class="sk-fill" style="--h:290" data-w="75%"></div></div><span class="sk-pct">75%</span></div>
+      <div class="skill-card card reveal" style="--h:10;transition-delay:.49s"><div class="sk-icon" style="--h:10"><svg viewBox="0 0 32 32" fill="currentColor"><circle cx="16" cy="16" r="14" opacity=".15"/><text x="16" y="21" text-anchor="middle" font-size="9" font-weight="bold" fill="currentColor">Fire</text></svg></div><h3>Firebase</h3><div class="sk-bar"><div class="sk-fill" style="--h:10" data-w="78%"></div></div><span class="sk-pct">78%</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="sec-wrap">
+    <div class="sec-header">
+      <span class="sec-tag">03 — Dự án</span>
+      <h2>Những gì tôi đã làm</h2>
+    </div>
+    <div class="proj-grid">
+      <!-- P1 -->
+      <div class="proj-card featured card reveal">
+        <div class="proj-head"><div class="tags"><span class="tag">Next.js</span><span class="tag">Tailwind CSS</span><span class="tag">Vercel</span></div><span class="proj-year">2024 – 2025</span></div>
+        <h3 class="proj-title">🌐 Website Cá Nhân &amp; Blog</h3>
+        <p class="proj-sub">Personal Portfolio</p>
+        <p class="proj-desc">Xây dựng trang web cá nhân để giới thiệu hồ sơ năng lực và chia sẻ kiến thức lập trình. Giao diện hiện đại, Mobile-first.</p>
+        <ul class="proj-feats">
+          <li>✦ Thiết kế UI hiện đại, tương thích đa thiết bị (Mobile-first)</li>
+          <li>✦ Tối ưu Lighthouse Score đạt <strong>95/100</strong></li>
+          <li>✦ Tích hợp CMS quản lý nội dung bài viết động</li>
+          <li>✦ Deploy trên Vercel với CI/CD tự động</li>
+        </ul>
+        <div class="proj-foot"><a href="https://taipham-blog.vercel.app" target="_blank" class="proj-link">Xem trang web →</a></div>
+      </div>
+      <!-- P2 -->
+      <div class="proj-card card reveal" style="transition-delay:.1s">
+        <div class="proj-head"><div class="tags"><span class="tag">Flutter</span><span class="tag">Firebase</span><span class="tag">Node.js</span></div><span class="proj-year">2025</span></div>
+        <h3 class="proj-title">🏃 Sport Connect</h3>
+        <p class="proj-sub">Ứng dụng kết nối thể thao</p>
+        <p class="proj-desc">Ứng dụng di động đa nền tảng (iOS/Android) giúp người chơi thể thao tìm đối thủ, tạo trận đấu và quản lý lịch thi đấu.</p>
+        <ul class="proj-feats">
+          <li>✦ Cross-platform với Flutter &amp; Dart</li>
+          <li>✦ Backend Serverless với Firebase</li>
+          <li>✦ Real-time Feature – cập nhật tức thì</li>
+        </ul>
+      </div>
+      <!-- P3 -->
+      <div class="proj-card card reveal" style="transition-delay:.2s">
+        <div class="proj-head"><div class="tags"><span class="tag">ReactJS</span><span class="tag">CSS3</span><span class="tag">Freelance</span></div><span class="proj-year">2024 – 2025</span></div>
+        <h3 class="proj-title">💼 Freelance Front-End</h3>
+        <p class="proj-sub">Landing Page cho doanh nghiệp</p>
+        <p class="proj-desc">Phát triển giao diện Landing Page cho các doanh nghiệp nhỏ tại địa phương, đáp ứng yêu cầu khách hàng và bàn giao đúng tiến độ.</p>
+        <ul class="proj-feats">
+          <li>✦ Giao diện responsive, UX tốt</li>
+          <li>✦ Làm việc trực tiếp với khách hàng</li>
+          <li>✦ Bàn giao đúng tiến độ, chất lượng cao</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="sec-wrap">
+    <div class="sec-header">
+      <span class="sec-tag">04 — Liên hệ</span>
+      <h2>Hãy kết nối với tôi</h2>
+    </div>
+    <div class="contact-wrap">
+      <div class="card reveal">
+        <p class="contact-intro">Tôi luôn sẵn sàng lắng nghe cơ hội mới, dự án thú vị hoặc đơn giản là một cuộc trò chuyện về công nghệ!</p>
+        <div class="contact-items">
+          <a href="tel:0363008242" class="c-item" id="c-phone"><div class="c-icon">📞</div><div><span class="c-label">Điện thoại</span><span class="c-val">0363 008 242</span></div></a>
+          <a href="mailto:phamhuynhtai2004@gmail.com" class="c-item" id="c-email"><div class="c-icon">📧</div><div><span class="c-label">Email</span><span class="c-val">phamhuynhtai2004@gmail.com</span></div></a>
+          <a href="https://taipham-blog.vercel.app" target="_blank" class="c-item" id="c-web"><div class="c-icon">🌐</div><div><span class="c-label">Website</span><span class="c-val">taipham-blog.vercel.app</span></div></a>
+          <div class="c-item" id="c-loc"><div class="c-icon">📍</div><div><span class="c-label">Địa điểm</span><span class="c-val">Trà Vinh, Việt Nam</span></div></div>
+        </div>
+      </div>
+      <div class="card reveal" style="transition-delay:.15s">
+        <h3 class="card-title">Gửi tin nhắn</h3>
+        <form id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="form-group"><label for="uname">Họ tên</label><input type="text" id="uname" placeholder="Nguyễn Văn A" required /></div>
+          <div class="form-group"><label for="uemail">Email</label><input type="email" id="uemail" placeholder="example@email.com" required /></div>
+          <div class="form-group"><label for="umsg">Tin nhắn</label><textarea id="umsg" rows="4" placeholder="Xin chào Tài..." required></textarea></div>
+          <button type="submit" class="btn btn-primary btn-full" id="submitBtn">Gửi tin nhắn 🚀</button>
+          <div class="form-success" id="formSuccess">✅ Cảm ơn! Tôi sẽ phản hồi sớm nhất có thể.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="foot-logo">PHT<span>.</span></span>
+  <p class="foot-text">Thiết kế &amp; Phát triển bởi <strong>Phạm Huỳnh Tài</strong> · 2025</p>
+  <p class="foot-sub">Front-End Developer · HUTECH</p>
+</footer>
+
+<script>
+/* PARTICLE BG */
+(function(){
+  const c=document.getElementById('bg'),ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){ W=c.width=innerWidth; H=c.height=innerHeight; }
+  resize(); addEventListener('resize',resize);
+  class P{ constructor(){ this.reset(); } reset(){ this.x=Math.random()*W;this.y=Math.random()*H;this.r=Math.random()*1.8+.4;this.dx=(Math.random()-.5)*.4;this.dy=(Math.random()-.5)*.4;this.a=Math.random()*.5+.1;this.h=Math.random()>.5?250:290; } update(){ this.x+=this.dx;this.y+=this.dy;if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset(); } draw(){ ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=`hsla(${this.h},70%,65%,${this.a})`;ctx.fill(); }}
+  for(let i=0;i<55;i++)pts.push(new P());
+  function blobs(){ [{x:W*.15,y:H*.25,r:350,c:'rgba(99,102,241,.08)'},{x:W*.85,y:H*.6,r:300,c:'rgba(168,85,247,.07)'},{x:W*.5,y:H*.9,r:250,c:'rgba(6,182,212,.05)'}].forEach(b=>{ const g=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r);g.addColorStop(0,b.c);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill(); }); }
+  function lines(){ for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx.beginPath();ctx.strokeStyle=`rgba(99,102,241,${.12*(1-d/120)})`;ctx.lineWidth=.5;ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}} }
+  function loop(){ctx.clearRect(0,0,W,H);blobs();pts.forEach(p=>{p.update();p.draw();});lines();requestAnimationFrame(loop);}
+  loop();
+})();
+
+/* NAV SCROLL */
+const nav=document.getElementById('nav');
+addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>40));
+
+/* REVEAL */
+const reveals=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); animFill(e.target); }});
+},{threshold:.15});
+reveals.forEach(r=>obs.observe(r));
+function animFill(el){ if(el.classList.contains('skill-card')){const f=el.querySelector('.sk-fill');if(f)f.style.width=f.dataset.w;} }
+
+/* HERO ANIMATION */
+document.querySelectorAll('.hero-badge,.hero-name,.hero-title,.hero-desc,.hero-cta,.hero-stats').forEach((el,i)=>{
+  el.style.cssText=`opacity:0;transform:translateY(30px);transition:opacity .7s ease ${i*.12}s,transform .7s ease ${i*.12}s`;
+  setTimeout(()=>el.style.cssText+=';opacity:1;transform:translateY(0)',100+i*120);
+});
+const aw=document.querySelector('.avatar-wrap');
+aw.style.cssText='opacity:0;transform:scale(.85);transition:opacity .9s ease .5s,transform .9s ease .5s';
+setTimeout(()=>aw.style.cssText+=';opacity:1;transform:scale(1)',200);
+
+/* FORM */
+function handleSubmit(e){
+  e.preventDefault();
+  const btn=document.getElementById('submitBtn'), suc=document.getElementById('formSuccess');
+  btn.textContent='Đang gửi...'; btn.disabled=true;
+  setTimeout(()=>{ suc.style.display='block'; btn.textContent='Đã gửi ✅'; e.target.reset();
+    setTimeout(()=>{ btn.textContent='Gửi tin nhắn 🚀'; btn.disabled=false; suc.style.display='none'; },4000); },1200);
+}
+
+/* ACTIVE NAV */
+const secs=document.querySelectorAll('section[id]'),lnks=document.querySelectorAll('.nav-links a');
+addEventListener('scroll',()=>{ let cur=''; secs.forEach(s=>{ if(scrollY>=s.offsetTop-120)cur=s.id; }); lnks.forEach(a=>{ a.style.color=a.getAttribute('href')==='#'+cur?'#6366f1':''; }); });
+</script>
+</body>
+</html>
