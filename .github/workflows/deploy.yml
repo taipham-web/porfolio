@@ -12,11 +12,11 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      # QUAN TRỌNG: Spring Boot cần Build JAR trước khi build Docker Image
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      # Sửa từ 17 thành 21
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4 # Khuyên dùng v4 cho các bản Java mới
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
           cache: maven
 
